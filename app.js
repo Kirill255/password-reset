@@ -4,7 +4,6 @@ const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');
-const expressValidator = require('express-validator');
 const passport = require('passport');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -29,8 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Exposes a bunch of methods for validating data. Used heavily on userController.validateRegister
-app.use(expressValidator());
+
 app.use(cookieParser());
 app.use(session({
   secret: config.SECRET,
@@ -39,17 +37,17 @@ app.use(session({
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
+
 // // The flash middleware let's us use req.flash('error', 'Shit!'), which will then pass that message to the next page the user requests
 app.use(flash());
 
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
-  // res.locals.h = helpers;
   res.locals.flashes = req.flash();
   res.locals.user = req.user || null;
-  // res.locals.currentPath = req.path;
   next();
 });
 

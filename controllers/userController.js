@@ -1,6 +1,9 @@
 const User = require('../models/User');
 const { promisify } = require("es6-promisify");
 
+const { body, validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
+
 exports.loginForm = (req, res) => {
   res.render('login', { title: 'Login' });
 };
@@ -9,24 +12,26 @@ exports.registerForm = (req, res) => {
   res.render('register', { title: 'Register' });
 };
 
-exports.validateRegister = (req, res, next) => {
-  req.sanitizeBody('name');
-  req.checkBody('name', 'You must supply a name!').notEmpty();
-  req.checkBody('email', 'That Email is not valid!').isEmail();
-  req.sanitizeBody('email').normalizeEmail({
-    remove_dots: false,
-    remove_extension: false,
-    gmail_remove_subaddress: false
-  });
-  req.checkBody('password', 'Password Cannot be Blank!').notEmpty();
-  req.checkBody('password-confirm', 'Confirmed Password cannot be blank!').notEmpty();
-  req.checkBody('password-confirm', 'Oops! Your passwords do not match').equals(req.body.password);
+exports.registerValidators = () => {
+  return [
+    body("name", "You must supply a name!").not().isEmpty({ ignore_whitespace: true }),
+    body("email", "That Email is not valid!").isEmail().normalizeEmail({
+      gmail_remove_dots: false, // don't use in production
+      gmail_remove_subaddress: false // don't use in production
+    }), // in production use — body("email", "That Email is not valid!").isEmail().normalizeEmail()
+    body("password", "Password Cannot be Blank!").not().isEmpty({ ignore_whitespace: true }),
+    body("password-confirm", "Confirmed Password cannot be blank!").not().isEmpty({ ignore_whitespace: true }),
+    body("password-confirm", "Oops! Your passwords do not match!").custom((value, { req }) => value === req.body.password),
+    sanitizeBody("*").trim().escape()
+  ]
+};
 
-  const errors = req.validationErrors();
-  if (errors) {
-    req.flash('error', errors.map(err => err.msg));
-    res.render('register', { title: 'Register', body: req.body, flashes: req.flash() });
-    return; // stop the fn from running
+exports.validateRegister = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    req.flash("error", errors.array().map(err => err.msg));
+    res.render("register", { title: "Register", body: req.body, flashes: req.flash() });
+    return;
   }
   next(); // there were no errors!
 };

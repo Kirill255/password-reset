@@ -20,6 +20,7 @@ router.get('/register', userController.registerForm);
 // 2. register the user
 // 3. we need to log them in
 router.post('/register',
+  userController.registerValidators(), // return array with validators
   userController.validateRegister,
   userController.register,
   authController.login
