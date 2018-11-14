@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('send-mail:server');
+var debug = require('debug')('password-reset:server');
 var http = require('http');
 
 /**
