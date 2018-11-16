@@ -1,3 +1,6 @@
+const winston = require("./winston");
+
+
 /*
   Catch Errors Handler
 
@@ -7,7 +10,7 @@
 */
 
 exports.catchErrors = (fn) => {
-  return function(req, res, next) {
+  return function (req, res, next) {
     return fn(req, res, next).catch(next);
   };
 };
@@ -44,6 +47,8 @@ exports.flashValidationErrors = (err, req, res, next) => {
   In development we show good error messages so if we hit a syntax error or any other previously un-handled error, we can show good info on what happened
 */
 exports.developmentErrors = (err, req, res, next) => {
+  // winston.error(err.message, err); // or winston.log("error", err.message, err), we don't need it in development
+
   err.stack = err.stack || '';
   const errorDetails = {
     message: err.message,
@@ -67,6 +72,8 @@ exports.developmentErrors = (err, req, res, next) => {
   No stacktraces are leaked to user
 */
 exports.productionErrors = (err, req, res, next) => {
+  winston.error(err.message, err);
+
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
