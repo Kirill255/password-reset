@@ -74,6 +74,12 @@ exports.developmentErrors = (err, req, res, next) => {
 exports.productionErrors = (err, req, res, next) => {
   winston.error(err.message, err);
 
+  // added this to csrf error handling (this is unnecessarily, I just decided to kill the session)
+  if (err.code === 'EBADCSRFTOKEN') {
+    // req.logout();
+    req.session.destroy();
+  }
+
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

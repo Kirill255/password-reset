@@ -5,11 +5,11 @@ const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 exports.loginForm = (req, res) => {
-  res.render('login', { title: 'Login' });
+  res.render('login', { title: 'Login', csrfToken: req.csrfToken() });
 };
 
 exports.registerForm = (req, res) => {
-  res.render('register', { title: 'Register' });
+  res.render('register', { title: 'Register', csrfToken: req.csrfToken() });
 };
 
 exports.registerValidators = () => {
@@ -45,7 +45,7 @@ exports.register = async (req, res, next) => {
 };
 
 exports.account = (req, res) => {
-  res.render('account', { title: 'Edit Your Account' });
+  res.render('account', { title: 'Edit Your Account', csrfToken: req.csrfToken() });
 };
 
 exports.updateAccount = async (req, res) => {

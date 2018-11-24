@@ -61,7 +61,7 @@ exports.reset = async (req, res) => {
     return res.redirect('/login');
   }
   // if there is a user, show the rest password form
-  res.render('reset', { title: 'Reset your Password' });
+  res.render('reset', { title: 'Reset your Password', csrfToken: req.csrfToken() });
 };
 
 exports.confirmedPasswords = (req, res, next) => {

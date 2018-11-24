@@ -6,6 +6,7 @@ const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');
 const passport = require('passport');
 const helmet = require('helmet');
+const csrf = require('csurf')
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -41,6 +42,9 @@ app.use(session({
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
+
+// app.use(csrf({ cookie: true }))
+app.use(csrf())
 
 app.use(passport.initialize());
 app.use(passport.session());
