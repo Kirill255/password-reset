@@ -7,6 +7,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const helmet = require('helmet');
 const csrf = require('csurf')
+// const rateLimit = require("express-rate-limit");
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -26,6 +27,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
+
+// app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// app.use(rateLimit({
+//   windowMs: 60 * 60 * 1000, // 1 hour window
+//   max: 5, // start blocking after 5 requests
+//   message:
+//     "Too many requests from this IP, please try again after an hour"
+// }));
 
 app.use(helmet())
 

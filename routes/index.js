@@ -4,6 +4,7 @@ var router = express.Router();
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 const { catchErrors } = require('../handlers/errorHandlers');
+const { registerAccountLimiter, resetPasswordLimiter, updateAccountLimiter } = require('../handlers/rateLimit');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -20,6 +21,7 @@ router.get('/register', userController.registerForm);
 // 2. register the user
 // 3. we need to log them in
 router.post('/register',
+  registerAccountLimiter,
   userController.registerValidators(), // return array with validators
   userController.validateRegister,
   userController.register,
@@ -29,9 +31,15 @@ router.post('/register',
 router.get('/logout', authController.logout);
 
 router.get('/account', authController.isLoggedIn, userController.account);
-router.post('/account', catchErrors(userController.updateAccount));
+router.post('/account',
+  updateAccountLimiter,
+  catchErrors(userController.updateAccount)
+);
 
-router.post('/account/forgot', catchErrors(authController.forgot)); // send refresh token to email
+router.post('/account/forgot',
+  resetPasswordLimiter,
+  catchErrors(authController.forgot)
+); // send refresh token to email
 router.get('/account/reset/:token', catchErrors(authController.reset)); // come to this page from email
 router.post('/account/reset/:token',
   authController.confirmedPasswords,
