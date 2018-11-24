@@ -7,6 +7,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const helmet = require('helmet');
 const csrf = require('csurf')
+const compression = require('compression')
 // const rateLimit = require("express-rate-limit");
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -35,6 +36,8 @@ app.use(logger('dev'));
 //   message:
 //     "Too many requests from this IP, please try again after an hour"
 // }));
+
+app.use(compression())
 
 app.use(helmet())
 
